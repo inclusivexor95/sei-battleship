@@ -22,7 +22,7 @@ Battleship is known worldwide as a pencil and paper game which dates from World 
 
 ### Getting Started:
 
-[Game link here](https://git.generalassemb.ly/inclusivexor95/sei-3/tree/master/projects/project-1/battleship)
+[Game link here](https://inclusivexor95.github.io/sei-battleship/)
 
 To play this game, you must first select an opponent (either a second player or the computer AI) by clicking one of the two buttons. Next, click and drag each ship onto the game board. If you are playing with two players, make sure the second player is not looking! Pressing the W, A, S, and D keys shifts the current ship by one square (up, left, down, and right respectively), and pressing the Q and E keys rotates the current ship. Ships cannot hang off of the grid, and cannot overlap each other. When you have finished placing the ships, click the 'done' button at the bottom of the screen. 
 

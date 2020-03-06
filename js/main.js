@@ -641,22 +641,22 @@ game.placeShips = function(player) {
             switch(e.keyCode) {
                 case 87:
                     game[shipLocations][currentShip].currentTranslation[1] = game[shipLocations][currentShip].currentTranslation[1] - 1;  
-                    $currentShipObject.css({'transform' : `translateY(calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh - 5px))`});
+                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + UP;
                     break;
                 case 83:
                     game[shipLocations][currentShip].currentTranslation[1] = game[shipLocations][currentShip].currentTranslation[1] + 1;  
-                    $currentShipObject.css({'transform' : `translateY(calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + 5px))`});
+                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + DOWN;
                     break;
                 case 65:
                     game[shipLocations][currentShip].currentTranslation[0] = game[shipLocations][currentShip].currentTranslation[0] - 1;  
-                    $currentShipObject.css({'transform' : `translateX(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh - 5px))`});
+                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + LEFT;
                     break;
                 case 68:
                     game[shipLocations][currentShip].currentTranslation[0] = game[shipLocations][currentShip].currentTranslation[0] + 1;  
-                    $currentShipObject.css({'transform' : `translateX(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + 5px))`});
+                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + RIGHT;
             };
         };
