@@ -465,6 +465,8 @@ game.checkShips = function(playerLocationsString) {
         };
     });
 
+    console.log(game[playerLocationsString].shipMap);
+
     const sortedLocationArray = game[playerLocationsString].shipMap.sort();
     let previous;
 
@@ -489,10 +491,16 @@ game.mapShips = function(playerLocationsString) {
 
             game[playerLocationsString][ship].shipMap = [];            
             const locationIndex = game[playerLocationsString][ship].location;
-            const anchor = locationIndex - Math.floor(game.ships[ship] / 2);
             
             if (game[playerLocationsString][ship].rotation === 0) {
                 
+                let anchor = locationIndex - Math.ceil(game.ships[ship] / 2) + 1;
+
+                if (ship === 'patrolBoat') {
+
+                    anchor++;
+                };
+
                 for (i = 0; i < game.ships[ship]; i++) {
 
                     game[playerLocationsString][ship].shipMap.push(anchor + i);
@@ -501,6 +509,12 @@ game.mapShips = function(playerLocationsString) {
             
             if (game[playerLocationsString][ship].rotation === 1) {
                 
+                let anchor = locationIndex - Math.floor(game.ships[ship] / 2);
+
+                if (ship === 'battleship') {
+                    anchor++;
+                };
+
                 for (i = 0; i < game.ships[ship]; i++) {
 
                     game[playerLocationsString][ship].shipMap.push(anchor + (i * 12));
@@ -528,7 +542,7 @@ game.placeComputerShips = function() {
 
         if (game.player2ShipLocations[e].rotation === 0) {
 
-            game.player2ShipLocations[e].location = (Math.floor(Math.random() * 10)) * 12 + ((Math.ceil(Math.random() * (10 - (2 * Math.floor((game.ships[e] / 2)))))) + Math.floor((game.ships[e] / 2)));
+            game.player2ShipLocations[e].location = (Math.floor(Math.random() * 10)) * 12 + ((Math.ceil(Math.random() * (10 - (2 * Math.floor((game.ships[e] / 2)))))) + Math.ceil((game.ships[e] / 2)));
         };
 
         if (game.player2ShipLocations[e].rotation === 1) {
@@ -622,6 +636,7 @@ game.placeShips = function(player) {
     $('.gridBox').on('drop', function(e) {
 
         game[shipLocations][currentShip].location = parseInt(e.target.id.slice(3));
+        game[shipLocations][currentShip].originalLocation = game[shipLocations][currentShip].location;
 
         if (game[shipLocations][currentShip].location !== undefined) {
 
@@ -635,6 +650,8 @@ game.placeShips = function(player) {
 
             game[shipLocations][currentShip].rotation++;
             $currentShipObject.css({'transform' : `rotate(${90 * (game[shipLocations][currentShip].rotation % 2)}deg)`});
+            game[shipLocations][currentShip].currentTranslation = [0, 0];
+            game[shipLocations][currentShip].location = game[shipLocations][currentShip].originalLocation;
         };
         if (game[shipLocations][currentShip] !== undefined && game[shipLocations][currentShip].location !== undefined) {
 
@@ -643,22 +660,27 @@ game.placeShips = function(player) {
                     game[shipLocations][currentShip].currentTranslation[1] = game[shipLocations][currentShip].currentTranslation[1] - 1;  
                     $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + UP;
+                    game[shipLocations][currentShip].rotation = 0;
                     break;
                 case 83:
                     game[shipLocations][currentShip].currentTranslation[1] = game[shipLocations][currentShip].currentTranslation[1] + 1;  
                     $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + DOWN;
+                    game[shipLocations][currentShip].rotation = 0;
                     break;
                 case 65:
                     game[shipLocations][currentShip].currentTranslation[0] = game[shipLocations][currentShip].currentTranslation[0] - 1;  
                     $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + LEFT;
+                    game[shipLocations][currentShip].rotation = 0;
                     break;
                 case 68:
                     game[shipLocations][currentShip].currentTranslation[0] = game[shipLocations][currentShip].currentTranslation[0] + 1;  
                     $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + RIGHT;
+                    game[shipLocations][currentShip].rotation = 0;
             };
+            console.log(game[shipLocations][currentShip].location);
         };
     });
 
