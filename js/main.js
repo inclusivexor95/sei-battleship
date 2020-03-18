@@ -465,8 +465,6 @@ game.checkShips = function(playerLocationsString) {
         };
     });
 
-    console.log(game[playerLocationsString].shipMap);
-
     const sortedLocationArray = game[playerLocationsString].shipMap.sort();
     let previous;
 
@@ -681,7 +679,6 @@ game.placeShips = function(player) {
                     game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + RIGHT;
                     game[shipLocations][currentShip].rotation = 0;
             };
-            console.log(game[shipLocations][currentShip].location);
         };
     });
 
