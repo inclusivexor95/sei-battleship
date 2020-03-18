@@ -637,6 +637,7 @@ game.placeShips = function(player) {
 
         game[shipLocations][currentShip].location = parseInt(e.target.id.slice(3));
         game[shipLocations][currentShip].originalLocation = game[shipLocations][currentShip].location;
+        game[shipLocations][currentShip].currentTranslation = [0, 0];
 
         if (game[shipLocations][currentShip].location !== undefined) {
 
