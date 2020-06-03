@@ -40,15 +40,15 @@ h1 {
 }
 
 #gameArea {
-    height: calc(80vh + 18px);
+    height: 80vh;
     min-width: 80vh;
-    width: calc(80vh + 18px);
+    width: 80vh;
     border: 1px solid #FBFCFF;
     display: flex;
     flex-wrap: wrap;
     align-content: center;
     /* margin: 0 10px; */
-    box-sizing: border-box;
+    box-sizing: content-box;
     /* z-index: -1; */
     background-color: #605856;
 }
@@ -60,7 +60,7 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 #gameArea .gridBox:hover {
@@ -204,11 +204,13 @@ img {
 .ship {
     display: flex;
     transform-origin: 4vh 4vh 0;
+    /* box-sizing: border-box; */
 }
 
 .ship div {
     background-color: #1C6E8C;
     border: 1px solid #FBFCFF;
+    /* box-sizing: border-box; */
 }
 
 /* #instructionArea {

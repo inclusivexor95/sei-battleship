@@ -458,75 +458,66 @@ game.checkShips = function(playerLocationsString) {
     game[playerLocationsString].shipMap = [];
     
     Object.keys(game.ships).forEach(function(ship) {
-
         if (game[playerLocationsString][ship] !== undefined) {
-
             game[playerLocationsString].shipMap = game[playerLocationsString].shipMap.concat(game[playerLocationsString][ship].shipMap);
         };
     });
 
+    // console.log(game[playerLocationsString].shipMap);
+    
     const sortedLocationArray = game[playerLocationsString].shipMap.sort();
+    console.log(sortedLocationArray);
     let previous;
 
-    sortedLocationArray.forEach(function(e) {
-
-        if (e === previous || game.unacceptableLocations.includes(e)) {
-
+    sortedLocationArray.forEach(function(el) {
+        if (el[0] === previous || el[0] > 10) {
             check = false;
         };
 
-        previous = e;
+        previous = el;
     });
 
     return check;
 }
 
 game.mapShips = function(playerLocationsString) {
-
     Object.keys(game.ships).forEach(function(ship) {
-        
         if (game[playerLocationsString][ship] !== undefined) {
-
             game[playerLocationsString][ship].shipMap = [];            
             const locationIndex = game[playerLocationsString][ship].location;
-            
-            if (game[playerLocationsString][ship].rotation === 0) {
-                
-                let anchor = locationIndex - Math.ceil(game.ships[ship] / 2) + 1;
 
-                if (ship === 'patrolBoat') {
+            if (game[playerLocationsString][ship].rotation % 2 === 0) {    
+                // let anchor = locationIndex - Math.ceil(game.ships[ship] / 2) + 1;
 
-                    anchor++;
-                };
+                // if (ship === 'patrolBoat') {
+
+                //     anchor++;
+                // };
 
                 for (i = 0; i < game.ships[ship]; i++) {
-
-                    game[playerLocationsString][ship].shipMap.push(anchor + i);
+                    game[playerLocationsString][ship].shipMap.push([parseInt(game[playerLocationsString][ship].location[0]), parseInt(game[playerLocationsString][ship].location[1]) + i]);
                 };
             };
             
-            if (game[playerLocationsString][ship].rotation === 1) {
+            if (game[playerLocationsString][ship].rotation % 2 === 1) {
                 
-                let anchor = locationIndex - Math.floor(game.ships[ship] / 2);
+                // let anchor = locationIndex - Math.floor(game.ships[ship] / 2);
 
-                if (ship === 'battleship') {
-                    anchor++;
-                };
+                // if (ship === 'battleship') {
+                //     anchor++;
+                // };
 
                 for (i = 0; i < game.ships[ship]; i++) {
-
-                    game[playerLocationsString][ship].shipMap.push(anchor + (i * 12));
+                    game[playerLocationsString][ship].shipMap.push([parseInt(game[playerLocationsString][ship].location[0]) + i, parseInt(game[playerLocationsString][ship].location[1])]);
                 };
             };
         };
     });
 
     if (game.checkShips(playerLocationsString) === false) {
-
         return false;
     }
     else {
-
         return true;
     };
 }
@@ -555,7 +546,6 @@ game.placeComputerShips = function() {
 }
 
 game.displayShips = function() {
-
     $('#gameInfo').empty();
     $('#footerInfo').empty();
     $('#gameInfo').append(game.shipHTML);
@@ -572,112 +562,98 @@ game.displayShips = function() {
 }
 
 game.placeShips = function(player) {
-
     let currentShip;
     let shipLocations;
+    const docHeight = $(document).height();
 
     if (player === '1') {
-
         shipLocations = 'player1ShipLocations';
     };
 
     if (player === '2') {
-
         shipLocations = 'player2ShipLocations';
     };
 
     $('#gameArea .gridBox').draggable({
-
         disabled: true
     });
 
-    $('#extraGrid .gridBox').draggable({
-
-        disabled: true
-    });
+    // $('#extraGrid .gridBox').draggable({
+    //     disabled: true
+    // });
 
     $('.ship').draggable({
-
         snap: $('.gridBox'),
-        snapTolerance: ($(document).height() / 728) * 35
+        snapTolerance: docHeight / 25,
+        revert: 'invalid',
+        cursorAt: { left: docHeight / 25, top: docHeight / 25 }
     });
     
-    $('#gameArea .gridBox').droppable();
-    $('#extraGrid .gridBox').droppable();
+    $('#gameArea .gridBox').droppable({
+        drop: function(e, ui) {
+             // game[shipLocations][currentShip].location = game.currentSquare;
+            if (game[shipLocations][currentShip].location !== undefined) {
+                $currentShipObject.children().css('background-color', '#1C6E8C');
+            };
+            // console.log(shipLocations, currentShip, game.currentSquare)
+            console.log(game[shipLocations][currentShip].location);
+        },
+        tolerance: 'pointer',
+        over: function(e, ui) {
+            game[shipLocations][currentShip].location = e.target.id.slice(1).split('c');
+        }
+    });
+    // $('#extraGrid .gridBox').droppable();
 
     $('.ship').on('mouseover', function(e) {
-
         currentShip = e.target.parentElement.id;
         $currentShipObject = $(e.target.parentElement);
 
         if (game[shipLocations][currentShip] === undefined) {
-
             game[shipLocations][currentShip] = {};
             game[shipLocations][currentShip].rotation = 0;
-            game[shipLocations][currentShip].currentTranslation = [0, 0];
         };
     });
 
-    $('.ship').on('mousedown', function() {
-
+    $('.ship').on('mousedown', function(e) {
         $(this).children().css('background-color', '#274156');
     });
 
     $('.ship').on('mouseup', function() {
-
         if (game[shipLocations][currentShip].location !== undefined) {
-
             $(this).children().css('background-color', '#1C6E8C');
         };
     });
 
-    $('.gridBox').on('drop', function(e) {
+    // $('.gridBox').on('mouseover', function(e) {
+    //     game.currentSquare = e.target.id.slice(1).split('c');
+    //     console.log(game.currentSquare);
+    // });
 
-        game[shipLocations][currentShip].location = parseInt(e.target.id.slice(3));
-        game[shipLocations][currentShip].originalLocation = game[shipLocations][currentShip].location;
-        game[shipLocations][currentShip].currentTranslation = [0, 0];
-
-        if (game[shipLocations][currentShip].location !== undefined) {
-
-            $currentShipObject.children().css('background-color', '#1C6E8C');
-        };
-    });
+    // $('.gridBox').on('drop', function(e) {
+    //     game[shipLocations][currentShip].location = game.currentSquare;
+    //     if (game[shipLocations][currentShip].location !== undefined) {
+    //         $currentShipObject.children().css('background-color', '#1C6E8C');
+    //     };
+    //     console.log(game[shipLocations][currentShip].location);
+    // });
 
     $(document).on('keydown', function(e) {
-
         if (e.keyCode === 69 || e.keyCode === 81) {
-
             game[shipLocations][currentShip].rotation++;
             $currentShipObject.css({'transform' : `rotate(${90 * (game[shipLocations][currentShip].rotation % 2)}deg)`});
-            game[shipLocations][currentShip].currentTranslation = [0, 0];
-            game[shipLocations][currentShip].location = game[shipLocations][currentShip].originalLocation;
         };
         if (game[shipLocations][currentShip] !== undefined && game[shipLocations][currentShip].location !== undefined) {
-
             switch(e.keyCode) {
                 case 87:
-                    game[shipLocations][currentShip].currentTranslation[1] = game[shipLocations][currentShip].currentTranslation[1] - 1;  
-                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
-                    game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + UP;
-                    game[shipLocations][currentShip].rotation = 0;
                     break;
                 case 83:
-                    game[shipLocations][currentShip].currentTranslation[1] = game[shipLocations][currentShip].currentTranslation[1] + 1;  
-                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
-                    game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + DOWN;
-                    game[shipLocations][currentShip].rotation = 0;
                     break;
                 case 65:
-                    game[shipLocations][currentShip].currentTranslation[0] = game[shipLocations][currentShip].currentTranslation[0] - 1;  
-                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
-                    game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + LEFT;
-                    game[shipLocations][currentShip].rotation = 0;
+                
                     break;
                 case 68:
-                    game[shipLocations][currentShip].currentTranslation[0] = game[shipLocations][currentShip].currentTranslation[0] + 1;  
-                    $currentShipObject.css({'transform' : `translate(calc(${game[shipLocations][currentShip].currentTranslation[0] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[0] * 0.7}%), calc(${game[shipLocations][currentShip].currentTranslation[1] * 8}vh + ${game[shipLocations][currentShip].currentTranslation[1] * 3}%))`});
-                    game[shipLocations][currentShip].location = game[shipLocations][currentShip].location + RIGHT;
-                    game[shipLocations][currentShip].rotation = 0;
+                    
             };
         };
     });
@@ -696,17 +672,13 @@ game.placeShips = function(player) {
 
 
     $('#doneButton').on('click', function() {
-
         if (game.players === 1) {
-
             if (game.mapShips(shipLocations) === false) {
-
                 alert('Ships cannot overlap or hang off the game grid, try again!');
                 game.displayShips();
                 game.placeShips('1');
             }
             else {
-
                 game.placeComputerShips();
                 game.play();
             };
@@ -715,25 +687,20 @@ game.placeShips = function(player) {
         if (game.players === 2) {
 
             if (player === '1') {
-
                 game.displayShips();
                 
                 if (game.mapShips(shipLocations) === false) {
-
                     alert('Ships cannot overlap or hang off the game grid, try again!');
                     game.placeShips('1');
                 };
                 
                 if (game.mapShips(shipLocations) === true) {
-
                     game.placeShips('2');
                 };
             };
 
             if (player === '2') {
-
                 if (game.mapShips(shipLocations) === false) {
-
                     alert('Ships cannot overlap or hang off the game grid, try again!');
                     game.placeShips('2');
                 };
@@ -751,16 +718,12 @@ game.welcome = function() {
     game.resize($welcomeBox);
 
     $('button').on('click', function(e) {
-
         const choice = e.target.id;
-        
-        if (choice === 'computerButton') {
 
+        if (choice === 'computerButton') {
             game.players = 1;
         };
-
         if (choice === 'playerButton') {
-
             game.players = 2;
         };
 
@@ -770,13 +733,11 @@ game.welcome = function() {
 }
 
 game.init = function() {
-
     game.displayShips();
     game.welcome();
 }
 
 
 $(function() {
-    
     game.init();
 });
