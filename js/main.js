@@ -3,12 +3,12 @@ const game = {};
 game.player1ShipLocations = {};
 game.player2ShipLocations = {};
 
-game.unacceptableLocations = [11, 12, 23, 24, 35, 36, 47, 48, 59, 60, 71, 72, 83, 84, 95, 96, 107, 108, 119, 120];
+// game.unacceptableLocations = [11, 12, 23, 24, 35, 36, 47, 48, 59, 60, 71, 72, 83, 84, 95, 96, 107, 108, 119, 120];
 
-const UP = -12;
-const DOWN = 12;
-const LEFT = -1;
-const RIGHT = 1;
+// const UP = -12;
+// const DOWN = 12;
+// const LEFT = -1;
+// const RIGHT = 1;
 
 game.directions = ['up', 'down', 'left', 'right'];
 
@@ -42,6 +42,9 @@ game.shipHTML = `<div class="shipContainer" id="carrierContainer">
 <div class="ship" id="patrolBoat"></div>
 </div>`;
 
+
+// changes the contents of the gameInfo div when game is started 
+
 game.showGameInfo = function() {
 
     $('#gameInfo').empty();
@@ -57,6 +60,9 @@ game.showGameInfo = function() {
     </div>
     `);
 }
+
+
+// checks if a hit ship/all ships is/are completely destroyed and informs player(s) of result 
 
 game.checkDestroyed = function(currentPlayer, currentOpponent, ship) {
 
@@ -83,6 +89,9 @@ game.checkDestroyed = function(currentPlayer, currentOpponent, ship) {
         };
     };
 }
+
+
+// displays hits/misses/destroyed ships on change of turn
 
 game.setupShips = function(currentPlayer, currentOpponent) {
 
@@ -120,6 +129,9 @@ game.setupShips = function(currentPlayer, currentOpponent) {
     $(`#player${currentPlayer}Box`).css('border', '3px solid white');
 }
 
+
+// checks if a given square is empty/can be targeted
+
 game.checkEmpty = function(boxIndex) {
 
     const box = $(`#box${boxIndex.toString()}`);
@@ -131,6 +143,9 @@ game.checkEmpty = function(boxIndex) {
         return true;
     };
 }
+
+
+// looks for the direction with the most space after a hit (therefore most likely to contain rest of ship)
 
 game.mostSpace = function(startBox, directions) {
 
@@ -176,6 +191,9 @@ game.mostSpace = function(startBox, directions) {
 
     return [highestDirection, highestCounter];
 }
+
+
+// Executes a shot and determines result (hit, miss, or destroyed ship)
 
 game.doHit = function(box, direction) {
 
@@ -226,6 +244,8 @@ game.doHit = function(box, direction) {
 }
 
 
+// AI logic if a ship is hit 
+
 game.bestTarget = function(lastDirection) {
 
     let directionArray;
@@ -275,19 +295,22 @@ game.bestTarget = function(lastDirection) {
     };
 }
 
-game.randomBox = function() {
 
-    return Math.ceil(Math.random() * 120);
+// returns a random square
+
+game.randomBox = function() {
+    return [Math.ceil(Math.random() * 10), Math.ceil(Math.random() * 10)];
 }
 
-game.randomShot = function() {
 
+// finds an empty square to target using the above random function and further above checkEmpty function
+
+game.randomShot = function() {
     let directionArray;
     const shot = game.randomBox();
     let biggestShip = 0;
 
     if (game.checkEmpty(shot)) {
-
         directionArray = game.mostSpace(shot, game.directions);
 
         Object.keys(game.ships).forEach(function(ship) {
@@ -304,41 +327,39 @@ game.randomShot = function() {
         };
     }
     else {
-
         game.randomShot();
     };
 }
 
-game.computerTurn = function() {
 
+// AI top-level decision-making
+
+game.computerTurn = function() {
     game.setupShips('2', '1');
 
     if (game.currentShip === null || game.player2ShipLocations.shipsSunk.includes(game.currentShip)) {
-
         game.currentDirection = null;
 
         Object.keys(game.ships).forEach(function(ship) {
-
             if (game.player2ShipLocations.hits[ship].length !== 0 && game.player2ShipLocations.hits[ship].length < game.ships[ship]) {
-
                 game.currentShip = ship;
             };
         });
     };
     
     if (game.currentShip && !(game.player2ShipLocations.shipsSunk.includes(game.currentShip))) {
-
         game.currentDirection = game.bestTarget(game.currentDirection);
     };
 
     if (!game.currentShip) {
-        
         game.randomShot();
     };
 }
 
-game.play = function() {
 
+// initializes game + creates necessary event listeners
+
+game.play = function() {
     let currentPlayer = '1';
     let currentOpponent = '2';
     let canIClick = true;
@@ -367,22 +388,29 @@ game.play = function() {
     $('#textBox').append(`<p>The game has begun!</p>`);
     game.setupShips(currentPlayer, currentOpponent);
 
-
     $('#gameArea .gridBox').on('click', function() {
-
         if (canIClick === true) {
-
             canIClick = false;
+
             const $thisBox = $(this);
-            const boxNumber = parseInt(this.id.slice(3));
+            const boxNumber = parseInt(this.id.slice(1).split('c'));
             let dumb = false;
-            let hit = false;
+            let hit;
     
             Object.keys(game.ships).forEach(function(ship) {
+                // if (game[`player${currentOpponent}ShipLocations`][ship].shipMap.includes(boxNumber)) {
+                //     hit = true;
+                //     $thisBox.append(`<i class="fas fa-bahai"></i>`);
+                //     game[`player${currentPlayer}ShipLocations`].hits[ship].push(boxNumber);
 
-                if (game[`player${currentOpponent}ShipLocations`][ship].shipMap.includes(boxNumber)) {
+                //     $('#textBox').append(`<p>Player ${currentPlayer} has hit Player ${currentOpponent}'s ${ship} ${game[`player${currentPlayer}ShipLocations`].hits[ship].length} time(s)</p>`);
+                //     game.checkDestroyed(currentPlayer, currentOpponent, ship);
+                // };
+                hit = game[player${currentOpponent}ShipLocations][ship].shipMap.find((el) => {
+                    return (el[0] === boxNumber[0] && el[1] === boxNumber[1]);
+                });
 
-                    hit = true;
+                if (hit) {
                     $thisBox.append(`<i class="fas fa-bahai"></i>`);
                     game[`player${currentPlayer}ShipLocations`].hits[ship].push(boxNumber);
 
@@ -391,43 +419,36 @@ game.play = function() {
                 };
             });
     
-            if (hit === false && game[`player${currentPlayer}ShipLocations`].misses.includes(boxNumber)) {
-
+            if (!hit && game[`player${currentPlayer}ShipLocations`].misses.find((el) => {
+                return (el[0] === boxNumber[0] && el[1] === boxNumber[1]);
+            })) {
                 dumb = true;
             }
-            else if (hit === false) {
-
+            else if (!hit) {
                 $thisBox.append(`<i class="fas fa-times"></i>`);
                 game[`player${currentPlayer}ShipLocations`].misses.push(boxNumber);
             };
 
             if (dumb === false) {
-    
                 setTimeout(function() {
-
                     if (game.players === 2) {
-    
                         if (currentPlayer === '1') {
-
                             currentPlayer = '2';
                             currentOpponent = '1';
                         }
                         else {
-
                             currentPlayer = '1';
                             currentOpponent = '2';
                         };
-                        
+                
                         game.setupShips(currentPlayer, currentOpponent);
                         canIClick = true;
                     };
     
                     if (game.players === 1) {
-
                         game.computerTurn();
-    
-                        setTimeout(function() {
 
+                        setTimeout(function() {
                             game.setupShips(currentPlayer, currentOpponent);
                             canIClick = true;
                         }, 2000);
@@ -438,22 +459,25 @@ game.play = function() {
     });
 }
 
-game.resize = function($box) {
 
+// keeps the element centered if the window is resized
+
+game.resize = function($box) {
     let width = $box.outerWidth();
     let height = $box.outerHeight();
     $box.css('left', `calc(50% - ${width / 2}px)`).css('top', `calc(50% - ${height / 2}px)`);
 
     $(window).on('resize', function() {
-
         width = $box.outerWidth();
         height = $box.outerHeight();
         $box.css('left', `calc(50% - ${width / 2}px)`).css('top', `calc(50% - ${height / 2}px)`);
     });
 }
 
-game.checkShips = function(playerLocationsString) {
 
+// makes sure the placed ships are not overlapping each other or the edge of the game area
+
+game.checkShips = function(playerLocationsString) {
     let check = true;
     game[playerLocationsString].shipMap = [];
     
@@ -462,29 +486,34 @@ game.checkShips = function(playerLocationsString) {
             game[playerLocationsString].shipMap = game[playerLocationsString].shipMap.concat(game[playerLocationsString][ship].shipMap);
         };
     });
-
-    // console.log(game[playerLocationsString].shipMap);
     
     const sortedLocationArray = game[playerLocationsString].shipMap.sort();
     console.log(sortedLocationArray);
     let previous;
 
     sortedLocationArray.forEach(function(el) {
-        if (el[0] === previous || el[0] > 10) {
+        if (el[0] > 10 || el[1] > 10) {
             check = false;
         };
 
+        if (previous && el[0] === previous[0]) {
+            if (el[1] === previous[1]) {
+                check = false;
+            };
+        };
         previous = el;
     });
-
     return check;
 }
+
+
+// creates an array of all occupied squares for each ship
 
 game.mapShips = function(playerLocationsString) {
     Object.keys(game.ships).forEach(function(ship) {
         if (game[playerLocationsString][ship] !== undefined) {
             game[playerLocationsString][ship].shipMap = [];            
-            const locationIndex = game[playerLocationsString][ship].location;
+            // const locationIndex = game[playerLocationsString][ship].location;
 
             if (game[playerLocationsString][ship].rotation % 2 === 0) {    
                 // let anchor = locationIndex - Math.ceil(game.ships[ship] / 2) + 1;
@@ -522,21 +551,21 @@ game.mapShips = function(playerLocationsString) {
     };
 }
 
+
+// places the computer's ships randomly
+
 game.placeComputerShips = function() {
 
-    Object.keys(game.ships).forEach(function randomShipLocation(e) {
-
+    Object.keys(game.ships).forEach(function randomShipLocation(ship) {
         game.player2ShipLocations[e] = {};
         game.player2ShipLocations[e].rotation = Math.round(Math.random());
 
         if (game.player2ShipLocations[e].rotation === 0) {
-
-            game.player2ShipLocations[e].location = (Math.floor(Math.random() * 10)) * 12 + ((Math.ceil(Math.random() * (10 - (2 * Math.floor((game.ships[e] / 2)))))) + Math.ceil((game.ships[e] / 2)));
+            game.player2ShipLocations[e].location = [Math.ceil(Math.random() * 10), Math.ceil(Math.random() * (10 - (game.ships[e] - 1)))];
         };
 
         if (game.player2ShipLocations[e].rotation === 1) {
-
-            game.player2ShipLocations[e].location = ((Math.floor(Math.random() * (10 - (game.ships[e] - 1))))) * 12 + Math.ceil(Math.random() * 10) + 2;
+            game.player2ShipLocations[e].location = [Math.ceil(Math.random() * (10 - (game.ships[e] - 1))), Math.ceil(Math.random() * 10)];
         };
 
         if (game.mapShips('player2ShipLocations') === false) {
@@ -545,21 +574,25 @@ game.placeComputerShips = function() {
     });
 }
 
+
+// generates the ship HTML
+
 game.displayShips = function() {
     $('#gameInfo').empty();
     $('#footerInfo').empty();
     $('#gameInfo').append(game.shipHTML);
 
     Object.keys(game.ships).forEach(function(ship) {
-
         $(`#${ship}Container`).append(`<h3>${ship}</h3>`);
-        
-        for (i = 0; i < game.ships[ship]; i++) {
 
+        for (i = 0; i < game.ships[ship]; i++) {
             $(`#${ship}`).append(`<div class="gridBox"></div>`);
         };
     });
 }
+
+
+// creates event listeners to allow player to place their ships, make them draggable, and record their locations
 
 game.placeShips = function(player) {
     let currentShip;
@@ -574,22 +607,17 @@ game.placeShips = function(player) {
         shipLocations = 'player2ShipLocations';
     };
 
-    $('#gameArea .gridBox').draggable({
-        disabled: true
-    });
+    // $('#gameArea .gridBox').draggable({
+    //     disabled: true
+    // });
 
     // $('#extraGrid .gridBox').draggable({
     //     disabled: true
     // });
-
-    $('.ship').draggable({
-        snap: $('.gridBox'),
-        snapTolerance: docHeight / 25,
-        revert: 'invalid',
-        cursorAt: { left: docHeight / 25, top: docHeight / 25 }
-    });
     
-    $('#gameArea .gridBox').droppable({
+    $('#gameArea .gridBox').draggable({
+        disabled: true
+    }).droppable({
         drop: function(e, ui) {
              // game[shipLocations][currentShip].location = game.currentSquare;
             if (game[shipLocations][currentShip].location !== undefined) {
@@ -604,6 +632,13 @@ game.placeShips = function(player) {
         }
     });
     // $('#extraGrid .gridBox').droppable();
+
+    $('.ship').draggable({
+        snap: $('.gridBox'),
+        snapTolerance: docHeight / 25,
+        revert: 'invalid',
+        cursorAt: { left: docHeight / 25, top: docHeight / 25 }
+    });
 
     $('.ship').on('mouseover', function(e) {
         currentShip = e.target.parentElement.id;
@@ -661,12 +696,10 @@ game.placeShips = function(player) {
     $('#footerInfo').append(`<button id="doneButton">Done</button>`);
 
     if (game.players === 2) {
-
         $('#footerInfo').append(`<h3>Player ${player} is placing their ships</h3>`);
     };
 
     if (game.players === 1) {
-
         $('#footerInfo').append(`Place your ships</h3>`);
     }
 
@@ -711,8 +744,10 @@ game.placeShips = function(player) {
     });
 }
 
-game.welcome = function() {
 
+// creates welcome/play options div
+
+game.welcome = function() {
     $('html').append(game.welcomeHTML);
     const $welcomeBox = $('#welcome');
     game.resize($welcomeBox);
@@ -732,11 +767,16 @@ game.welcome = function() {
     });
 }
 
+
+// init function
+
 game.init = function() {
     game.displayShips();
     game.welcome();
 }
 
+
+// document ready
 
 $(function() {
     game.init();
