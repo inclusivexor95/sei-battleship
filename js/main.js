@@ -164,7 +164,7 @@ game.mostSpace = function(startBox, directions) {
     Object.keys(counter).forEach(function(directionCounter) {
         if (counter[directionCounter] > highestCounter) {
             highestCounter = counter[directionCounter];
-            highestDirection = directionCounter
+            highestDirection = directionCounter;
         };
     });
 
